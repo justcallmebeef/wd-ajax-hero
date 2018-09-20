@@ -1,32 +1,34 @@
-(function() {
+(function () {
   'use strict';
 
-  const movies = [];
+  var movies = [];
 
-  const renderMovies = function() {
+  const renderMovies = function () {
     $('#listings').empty();
 
     for (const movie of movies) {
       const $col = $('<div>').addClass('col s6');
       const $card = $('<div>').addClass('card hoverable');
       const $content = $('<div>').addClass('card-content center');
-      const $title = $('<h6>').addClass('card-title truncate');
+      const $Title = $('<h6>').addClass('card-Title truncate');
 
-      $title.attr({
+      $Title.attr({
         'data-position': 'top',
-        'data-tooltip': movie.title
+        'data-tooltip': movie.Title
       });
 
-      $title.tooltip({ delay: 50 }).text(movie.title);
+      $Title.tooltip({
+        delay: 50
+      }).text(movie.Title);
 
-      const $poster = $('<img>').addClass('poster');
+      const $Poster = $('<img>').addClass('Poster');
 
-      $poster.attr({
-        src: movie.poster,
-        alt: `${movie.poster} Poster`
+      $Poster.attr({
+        src: movie.Poster,
+        alt: `${movie.Poster} Poster`
       });
 
-      $content.append($title, $poster);
+      $content.append($Title, $Poster);
       $card.append($content);
 
       const $action = $('<div>').addClass('card-action center');
@@ -41,8 +43,8 @@
 
       const $modal = $('<div>').addClass('modal').attr('id', movie.id);
       const $modalContent = $('<div>').addClass('modal-content');
-      const $modalHeader = $('<h4>').text(movie.title);
-      const $movieYear = $('<h6>').text(`Released in ${movie.year}`);
+      const $modalHeader = $('<h4>').text(movie.Title);
+      const $movieYear = $('<h6>').text(`Released in ${movie.Year}`);
       const $modalText = $('<p>').text(movie.plot);
 
       $modalContent.append($modalHeader, $movieYear, $modalText);
@@ -56,5 +58,26 @@
     }
   };
 
-  // ADD YOUR CODE HERE
+  const proxy = "https://cors-anywhere.herokuapp.com/"
+
+  var searchBar = document.querySelector('#search')
+  var submit = document.querySelector('#submit')
+
+  submit.addEventListener('click', listenForSubmissions)
+
+  function listenForSubmissions(event) {
+    event.preventDefault();
+    fetch(proxy + 'http://omdb-api.now.sh/?s=' + encodeURI(searchBar.value))
+      .then((response) => response.json())
+      .then ((function(movieResult) {
+        for(let i = 0; i < movieResult.Search.length; i++) {
+          movies.push(movieResult.Search[i])
+          
+        }
+        renderMovies()
+      }))
+      .catch((error) => console.log(error))
+      movies = []
+  }
+
 })();
